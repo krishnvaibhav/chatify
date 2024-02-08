@@ -1,0 +1,1 @@
+const LOGO1 = 'assets/logo1.png';
