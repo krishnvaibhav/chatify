@@ -21,12 +21,12 @@ class HomeView extends GetView<HomeController> {
               'HomeView is working',
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
-            // ElevatedButton(
-            //   onPressed: () async {
-            //     FirebaseAuth.instance.signOut();
-            //   },
-            //   child: Text("LOGOUT"),
-            // )
+            ElevatedButton(
+              onPressed: () async {
+                FirebaseAuth.instance.signOut();
+              },
+              child: Text("LOGOUT"),
+            )
           ],
         ),
       ),
