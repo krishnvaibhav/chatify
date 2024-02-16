@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/localAuthentication/bindings/local_authentication_binding.dart';
+import '../modules/localAuthentication/views/local_authentication_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/profilePic/bindings/profile_pic_binding.dart';
@@ -29,6 +31,11 @@ class AppPages {
       name: _Paths.PROFILE_PIC,
       page: () => const ProfilePicView(),
       binding: ProfilePicBinding(),
+    ),
+    GetPage(
+      name: _Paths.LOCAL_AUTHENTICATION,
+      page: () => const LocalAuthenticationView(),
+      binding: LocalAuthenticationBinding(),
     ),
   ];
 }

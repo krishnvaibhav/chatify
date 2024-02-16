@@ -6,6 +6,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const LOGIN = _Paths.LOGIN;
   static const PROFILE_PIC = _Paths.PROFILE_PIC;
+  static const LOCAL_AUTHENTICATION = _Paths.LOCAL_AUTHENTICATION;
 }
 
 abstract class _Paths {
@@ -13,4 +14,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const LOGIN = '/login';
   static const PROFILE_PIC = '/profile-pic';
+  static const LOCAL_AUTHENTICATION = '/local-authentication';
 }
