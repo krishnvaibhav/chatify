@@ -1,33 +1,49 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
 
-  final GlobalKey<SliderDrawerState> key = GlobalKey<SliderDrawerState>();
 
-  RxString? name ;
 
-  void open(){
-    key.currentState?.openSlider();
+
+  RxString? name;
+
+  final userDb = FirebaseFirestore.instance.collection('users');
+  RxBool loading = false.obs;
+  RxMap userData = {}.obs;
+
+
+
+ void loadData() async {
+   final id = FirebaseAuth.instance.currentUser?.uid;
+   loading.value = true;
+    final docRef = userDb.doc(id);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        print("DATA RECIEVED $data");
+        userData = data.obs;
+        loading.value = false;
+      },
+      onError: (e) {
+        print("Error getting document: $e");
+      },
+    );
+    loading.value = false;
   }
 
-  void close(){
-    key.currentState?.closeSlider();
-  }
-
-  void logout(){
-    key.currentState?.dispose();
+  void logout() {
     FirebaseAuth.instance.signOut();
   }
 
-  void loadData(){
+  void loadEmail() {
     name = FirebaseAuth.instance.currentUser?.email!.obs;
   }
 
-
+  void closeDrawer(context) {
+    navigator?.pop(context);
+  }
 
   @override
   void onInit() {
@@ -37,13 +53,15 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    loadData();
-    print("EMAIL IS !!!!!!! ${FirebaseAuth.instance.currentUser?.email}");
+    if(FirebaseAuth.instance.currentUser != null) {
+      print("loading user");
+      loadData();
+      loadEmail();
+    }
   }
 
   @override
   void onClose() {
     super.onClose();
   }
-
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatify/app/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +31,7 @@ class ProfilePicView extends GetView<ProfilePicController> {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Obx(()=> Column(
+
               children: [
                 const SizedBox(
                   height: 20,
@@ -38,7 +41,7 @@ class ProfilePicView extends GetView<ProfilePicController> {
                       backgroundColor: ColorConstants.lightOpacity,
                       foregroundImage: controller.pickedImageFile.value != null
                           ? FileImage(controller.pickedImageFile.value!)
-                          : null,
+                          : NetworkImage(controller.userData['url']) as ImageProvider,
                     ),
                 const SizedBox(
                     height:
@@ -56,15 +59,17 @@ class ProfilePicView extends GetView<ProfilePicController> {
                 const SizedBox(
                     height:
                         16), // Add some space between the CircleAvatar and the TextButton
-                _inputContainer(context, controller, "Name"),
+                _inputContainer(context, controller, "Name",controller.nameController),
                 const SizedBox(
                     height:
                         16), // Add some space between the CircleAvatar and the TextButton
-                _inputContainer(context, controller, "Bio"),
+                _inputContainer(context, controller, "Bio",controller.bioController),
                 const SizedBox(
                     height:
                         16), // Add some space between the CircleAvatar and the TextButton
-                 controller.loading.value ? _loader(context) : _authButton(context, controller)
+                _inputContainer(context, controller, "Number",controller.numberController),
+
+                controller.loading.value ? _loader(context) : _authButton(context, controller)
               ],
             ),
             )
@@ -76,7 +81,7 @@ class ProfilePicView extends GetView<ProfilePicController> {
 }
 
 Widget _inputContainer(
-    BuildContext context, ProfilePicController controller, String hintText) {
+    BuildContext context, ProfilePicController controller, String hintText,TextEditingController textController) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: TextFormField(
@@ -85,11 +90,9 @@ Widget _inputContainer(
             color: ColorConstants.light,
             decorationColor: ColorConstants.light,
           ),
-      controller: hintText == "Name"
-          ? controller.nameController
-          : controller.bioController,
+      controller: textController,
       cursorColor: ColorConstants.light,
-      keyboardType: TextInputType.text,
+      keyboardType: textController == controller.numberController ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         hintText: hintText,

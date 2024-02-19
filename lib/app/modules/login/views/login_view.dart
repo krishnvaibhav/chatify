@@ -10,6 +10,9 @@ import '../controllers/login_controller.dart';
 class LoginView extends GetView<LoginController> {
   LoginView({Key? key}) : super(key: key);
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +25,7 @@ class LoginView extends GetView<LoginController> {
           () => Column(
             children: [
               Form(
-                key: controller.formKey,
+                key: formKey,
                 child: Column(
                   children: [
                     _titleText(context),
@@ -35,7 +38,7 @@ class LoginView extends GetView<LoginController> {
                     _inputContainer(
                         context, controller, "Password", _passwordValidation),
                     !controller.loading.value
-                        ? _authButton(context, controller)
+                        ? _authButton(context, controller,formKey)
                         : _loader(context),
                     _changeAuthType(context, controller)
                   ],
@@ -108,7 +111,7 @@ String? _passwordValidation(String? value) {
   return null;
 }
 
-Widget _authButton(BuildContext context, LoginController controller) {
+Widget _authButton(BuildContext context, LoginController controller,formKey) {
   return Padding(
     padding: const EdgeInsets.all(20),
     child: SizedBox(
@@ -117,7 +120,7 @@ Widget _authButton(BuildContext context, LoginController controller) {
         style: ElevatedButton.styleFrom(
           shape: const BeveledRectangleBorder(),
         ),
-        onPressed: () => controller.submit(context),
+        onPressed: () => controller.submit(context,formKey),
         icon: Icon(
           controller.isLogin.value ? Icons.login : Icons.verified_user_rounded,
           color: ColorConstants.darkSecond,
