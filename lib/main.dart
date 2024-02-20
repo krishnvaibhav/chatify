@@ -1,4 +1,5 @@
 import 'package:chatify/app/constants/text_theme.dart';
+import 'package:chatify/app/modules/chat/controllers/chat_controller.dart';
 import 'package:chatify/app/modules/contacts/controllers/contacts_controller.dart';
 import 'package:chatify/app/modules/home/controllers/home_controller.dart';
 import 'package:chatify/app/modules/home/views/home_view.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
   Get.put(ProfilePicController());
   Get.put(HomeController());
   Get.put(ContactsController());
+  Get.put(ChatController());
 
 
 

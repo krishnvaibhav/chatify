@@ -51,6 +51,7 @@ class ProfilePicController extends GetxController {
          userData = data.obs;
          nameController.text = userData["name"];
          bioController.text = userData["bio"];
+         numberController.text = userData["number"];
         loading.value = false;
       },
       onError: (e) {
@@ -62,7 +63,7 @@ class ProfilePicController extends GetxController {
 
 
 
-  void saveProfile() async {
+  void saveProfile(context) async {
     final id = FirebaseAuth.instance.currentUser?.uid;
     print("Saving profile");
     try {
@@ -70,24 +71,31 @@ class ProfilePicController extends GetxController {
       final name = nameController.text;
       final bio = bioController.text;
       final number = numberController.text;
-      if(pickedImageFile.value != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_images')
-            .child("$id.jpg");
-        await storageRef.putFile(pickedImageFile.value!);
-        final url = await storageRef.getDownloadURL();
-        await userDb.doc(id).update({'url': url, 'name': name, 'bio': bio,'number': number});
-        print("DATA WRITTEN");
-      }
-      else{
-        await userDb.doc(id).update({'name': name, 'bio': bio,'number': number});
-        print("DATA WRITTEN");
-      }
+      if(number != ""){
+        if(pickedImageFile.value != null) {
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('user_images')
+              .child("$id.jpg");
+          await storageRef.putFile(pickedImageFile.value!);
+          final url = await storageRef.getDownloadURL();
+          await userDb.doc(id).update({'url': url, 'name': name, 'bio': bio,'number': "+91$number"});
+          print("DATA WRITTEN");
+        }
+        else{
+          await userDb.doc(id).update({'name': name, 'bio': bio,'number': "+91$number"});
+          print("DATA WRITTEN");
+        }
         loading.value = false;
         loadData();
         homeController.loadData();
         Get.to(() => const HomeView());
+      }
+      else{
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter your number")));
+      }
+
     } catch (err) {
       print("ERROR $err");
     }

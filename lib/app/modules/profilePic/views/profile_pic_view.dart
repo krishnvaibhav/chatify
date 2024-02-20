@@ -111,7 +111,7 @@ Widget _authButton(BuildContext context, ProfilePicController controller) {
               borderRadius: BorderRadius.all(Radius.circular(2))),
           backgroundColor: ColorConstants.primary),
       onPressed: () => {
-        controller.saveProfile()
+        controller.saveProfile(context)
       },
       icon: const Icon(
         Icons.check,

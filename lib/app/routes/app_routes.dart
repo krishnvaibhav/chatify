@@ -8,6 +8,7 @@ abstract class Routes {
   static const PROFILE_PIC = _Paths.PROFILE_PIC;
   static const LOCAL_AUTHENTICATION = _Paths.LOCAL_AUTHENTICATION;
   static const CONTACTS = _Paths.CONTACTS;
+  static const CHAT = _Paths.CHAT;
 }
 
 abstract class _Paths {
@@ -17,4 +18,5 @@ abstract class _Paths {
   static const PROFILE_PIC = '/profile-pic';
   static const LOCAL_AUTHENTICATION = '/local-authentication';
   static const CONTACTS = '/contacts';
+  static const CHAT = '/chat';
 }
