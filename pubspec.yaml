@@ -19,6 +19,7 @@ dependencies:
   flutter_slider_drawer: ^2.1.3
   cloud_firestore: ^4.15.4
   flutter_contacts: ^1.1.7+1
+  firebase_messaging: ^14.7.16
 
 dev_dependencies: 
   flutter_lints: ^2.0.0

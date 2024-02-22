@@ -15,7 +15,8 @@ class LoginController extends GetxController {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
 
-  final ProfilePicController profileController = Get.put(ProfilePicController());
+  final ProfilePicController profileController =
+      Get.put(ProfilePicController());
   final HomeController homeController = Get.put(HomeController());
 
   RxBool isLogin = true.obs;
@@ -46,7 +47,7 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
-  void submit(context,formKey) async {
+  void submit(context, formKey) async {
     print(kDebugMode);
     print(kReleaseMode);
     final isValid = formKey.currentState!.validate();
@@ -74,7 +75,6 @@ class LoginController extends GetxController {
       final user = await _firebase.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
 
-
       print("Loading usersss !!!!");
       homeController.loadData();
       profileController.loadData();
@@ -84,7 +84,7 @@ class LoginController extends GetxController {
         SnackBar(content: Text("Logged in ${user.user!.email}")),
       );
 
-      Get.to(()=>HomeView());
+      Get.to(() => HomeView());
     } on FirebaseAuthException catch (err) {
       _handleError(context, err.message ?? "Unknown error occurred");
     }
@@ -95,7 +95,6 @@ class LoginController extends GetxController {
       final userCred = await _firebase.createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
 
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Account created successfully")),
       );
@@ -105,19 +104,23 @@ class LoginController extends GetxController {
         number = "+91$number";
       }
 
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user!.uid)
-          .set({'name': "User", 'bio': "Chatify user here", "url": "",'number':number });
+          .set({
+        'name': "User",
+        'bio': "Chatify user here",
+        "url": "",
+        'number': number,
+        'chats': []
+      });
 
       print("Loading usersss !!!!");
-       homeController.loadData();
+      homeController.loadData();
       profileController.loadData();
       homeController.loadEmail();
 
-      Get.to(()=>const HomeView());
-
+      Get.to(() => const HomeView());
     } on FirebaseAuthException catch (err) {
       _handleError(context, err.message ?? "Unknown error occurred");
     }

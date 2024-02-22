@@ -34,10 +34,31 @@ class HomeView extends GetView<HomeController> {
           centerTitle: true,
         ),
         drawer: _drawer(context, controller),
-        body: Container(
-          color: ColorConstants.darkSecond,
-        ));
+        body: Obx(() => Container(
+              color: ColorConstants.darkSecond,
+              child: !controller.loading.value
+                  ? _userCardList(controller.idList, controller)
+                  : CircularProgressIndicator(),
+            )));
   }
+}
+
+Widget _userCardList(RxList idList, controller) {
+  return idList.length != 0
+      ? ListView.builder(
+          itemCount: idList.length,
+          itemBuilder: (context, index) {
+            return _userCard(idList[index], controller);
+          },
+        )
+      : Center(child: Text("No cards"));
+}
+
+Widget _userCard(id, controller) {
+  return Text(
+    id,
+    style: TextStyle(color: Colors.white),
+  );
 }
 
 Widget _drawer(context, controller) {
@@ -89,16 +110,18 @@ Widget _sliderContent(context, HomeController controller) {
                             "Delete Account",
                             Icons.delete,
                             controller,
-                        (),
+                            (),
                             () => controller.toggleAlert())
                         : Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(backgroundColor: ColorConstants.darkSecond),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            ColorConstants.darkSecond),
                                     onPressed: () {
                                       controller.toggleAlert();
                                       controller.deleteUser(context);
@@ -114,8 +137,9 @@ Widget _sliderContent(context, HomeController controller) {
                               Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(backgroundColor: ColorConstants.darkSecond),
-
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            ColorConstants.darkSecond),
                                     onPressed: () {
                                       controller.toggleAlert();
                                     },
@@ -124,7 +148,8 @@ Widget _sliderContent(context, HomeController controller) {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
-                                          .copyWith(color: ColorConstants.light),
+                                          .copyWith(
+                                              color: ColorConstants.light),
                                     )),
                               )
                             ],
@@ -151,8 +176,8 @@ Widget _styledListTile(
       ),
       onTap: () {
         onClick();
-        title != "Delete Account" ? controller.closeDrawer(context) : (){};
-        title != "Delete Account" ? Get.to(page) : (){};
+        title != "Delete Account" ? controller.closeDrawer(context) : () {};
+        title != "Delete Account" ? Get.to(page) : () {};
       },
       title: Text(
         title,

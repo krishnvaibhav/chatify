@@ -1,6 +1,8 @@
 import 'package:chatify/app/modules/chat/controllers/chat_model.dart';
+import 'package:chatify/app/modules/home/controllers/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -33,7 +35,7 @@ class ChatController extends GetxController {
     );
   }
 
-  void handleMessageSubmit(id) {
+  Future<void> handleMessageSubmit(id) async {
     final myId = FirebaseAuth.instance.currentUser!.uid;
 
     List<String> ids = [myId, id];
@@ -60,6 +62,28 @@ class ChatController extends GetxController {
         .add(messageData);
 
     messageController.clear();
+
+    bool first = true;
+    userDb.where("chats", arrayContains: id).get().then(
+      (querySnapshot) {
+        print("NOt first");
+        first = false;
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+
+    if (first) {
+      print("Adding first message");
+      try {
+        userDb.doc(myId).update({
+          'chats': FieldValue.arrayUnion([id])
+        });
+        final HomeController controller = HomeController();
+        controller.getIdList();
+      } catch (err) {
+        print(err);
+      }
+    }
   }
 
   Stream<QuerySnapshot> getMessage(userId, otherUserId) {
