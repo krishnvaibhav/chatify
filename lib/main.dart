@@ -38,7 +38,6 @@ Future<void> main() async {
   Get.put(ChatController());
 
 
-
   runApp(
     GetMaterialApp(
       theme: theme,

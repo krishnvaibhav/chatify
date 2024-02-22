@@ -17,10 +17,7 @@ class ProfilePicView extends GetView<ProfilePicController> {
       appBar: AppBar(
         title: Text(
           "Profile",
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium!
-             ,
+          style: Theme.of(context).textTheme.titleMedium!,
         ),
         centerTitle: true,
         backgroundColor: ColorConstants.darkSecond,
@@ -29,59 +26,66 @@ class ProfilePicView extends GetView<ProfilePicController> {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Obx(()=> Column(
-
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                 CircleAvatar(
+              padding: const EdgeInsets.all(20.0),
+              child: Obx(
+                () => Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CircleAvatar(
                       radius: 80,
                       backgroundColor: ColorConstants.lightOpacity,
                       foregroundImage: controller.pickedImageFile.value != null
                           ? FileImage(controller.pickedImageFile.value!)
-                          : NetworkImage(controller.userData['url']) as ImageProvider,
+                          : controller.userData["url"] != ""
+                              ? NetworkImage(controller.userData['url'])
+                                  as ImageProvider
+                              : null,
                     ),
-                const SizedBox(
-                    height:
-                        16), // Add some space between the CircleAvatar and the TextButton
-                TextButton.icon(
-                  onPressed: () {
-                    controller.pickImage();
-                  },
-                  icon: const Icon(Icons.image),
-                  label: Text(
-                    "Add Image",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                const SizedBox(
-                    height:
-                        16), // Add some space between the CircleAvatar and the TextButton
-                _inputContainer(context, controller, "Name",controller.nameController),
-                const SizedBox(
-                    height:
-                        16), // Add some space between the CircleAvatar and the TextButton
-                _inputContainer(context, controller, "Bio",controller.bioController),
-                const SizedBox(
-                    height:
-                        16), // Add some space between the CircleAvatar and the TextButton
-                _inputContainer(context, controller, "Number",controller.numberController),
+                    const SizedBox(
+                        height:
+                            16), // Add some space between the CircleAvatar and the TextButton
+                    TextButton.icon(
+                      onPressed: () {
+                        controller.pickImage();
+                      },
+                      icon: const Icon(Icons.image),
+                      label: Text(
+                        "Add Image",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    const SizedBox(
+                        height:
+                            16), // Add some space between the CircleAvatar and the TextButton
+                    _inputContainer(
+                        context, controller, "Name", controller.nameController),
+                    const SizedBox(
+                        height:
+                            16), // Add some space between the CircleAvatar and the TextButton
+                    _inputContainer(
+                        context, controller, "Bio", controller.bioController),
+                    const SizedBox(
+                        height:
+                            16), // Add some space between the CircleAvatar and the TextButton
+                    _inputContainer(context, controller, "Number",
+                        controller.numberController),
 
-                controller.loading.value ? _loader(context) : _authButton(context, controller)
-              ],
-            ),
-            )
-          ),
+                    controller.loading.value
+                        ? _loader(context)
+                        : _authButton(context, controller)
+                  ],
+                ),
+              )),
         ),
       ),
     );
   }
 }
 
-Widget _inputContainer(
-    BuildContext context, ProfilePicController controller, String hintText,TextEditingController textController) {
+Widget _inputContainer(BuildContext context, ProfilePicController controller,
+    String hintText, TextEditingController textController) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: TextFormField(
@@ -92,7 +96,9 @@ Widget _inputContainer(
           ),
       controller: textController,
       cursorColor: ColorConstants.light,
-      keyboardType: textController == controller.numberController ? TextInputType.number : TextInputType.text,
+      keyboardType: textController == controller.numberController
+          ? TextInputType.number
+          : TextInputType.text,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         hintText: hintText,
@@ -110,9 +116,7 @@ Widget _authButton(BuildContext context, ProfilePicController controller) {
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(2))),
           backgroundColor: ColorConstants.primary),
-      onPressed: () => {
-        controller.saveProfile(context)
-      },
+      onPressed: () => {controller.saveProfile(context)},
       icon: const Icon(
         Icons.check,
         color: ColorConstants.light,
@@ -126,7 +130,6 @@ Widget _authButton(BuildContext context, ProfilePicController controller) {
     ),
   );
 }
-
 
 Widget _loader(BuildContext context) {
   return const Padding(

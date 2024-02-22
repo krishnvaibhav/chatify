@@ -12,7 +12,6 @@ class LoginView extends GetView<LoginController> {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,15 +29,22 @@ class LoginView extends GetView<LoginController> {
                   children: [
                     _titleText(context),
                     _mainImage(context, LOGO1),
-                    _inputContainer(
-                        context, controller, "Email", _emailValidation),
+                    _inputContainer(context, controller, "Email",
+                        _emailValidation, controller.emailController),
                     const SizedBox(
                       height: 20,
                     ),
-                    _inputContainer(
-                        context, controller, "Password", _passwordValidation),
+                    _inputContainer(context, controller, "Password",
+                        _passwordValidation, controller.passwordController),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    !controller.isLogin.value?
+                    _inputContainer(context, controller, "Number",
+                        _numberValidation, controller.numberController)
+                    : Container(),
                     !controller.loading.value
-                        ? _authButton(context, controller,formKey)
+                        ? _authButton(context, controller, formKey)
                         : _loader(context),
                     _changeAuthType(context, controller)
                   ],
@@ -70,8 +76,12 @@ Widget _mainImage(BuildContext context, String img) {
   );
 }
 
-Widget _inputContainer(BuildContext context, LoginController controller,
-    String hintText, String? Function(String?) validation) {
+Widget _inputContainer(
+    BuildContext context,
+    LoginController controller,
+    String hintText,
+    String? Function(String?) validation,
+    TextEditingController textEditingController) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: TextFormField(
@@ -82,9 +92,7 @@ Widget _inputContainer(BuildContext context, LoginController controller,
             decorationColor: ColorConstants.light,
           ),
       obscureText: hintText == "Password" ? true : false,
-      controller: hintText == "Email"
-          ? controller.emailController
-          : controller.passwordController,
+      controller: textEditingController,
       cursorColor: ColorConstants.light,
       keyboardType:
           hintText == "Email" ? TextInputType.emailAddress : TextInputType.text,
@@ -104,6 +112,15 @@ String? _emailValidation(String? value) {
   return null;
 }
 
+String? _numberValidation(String? value) {
+  if (value == null || value.trim().isEmpty || value.startsWith("+91")
+      ? value?.length != 13
+      : value.length != 10) {
+    return NUMBER_VALIDATION;
+  }
+  return null;
+}
+
 String? _passwordValidation(String? value) {
   if (value == null || value.trim().length < 6) {
     return PASSWORD_VALIDATION;
@@ -111,7 +128,7 @@ String? _passwordValidation(String? value) {
   return null;
 }
 
-Widget _authButton(BuildContext context, LoginController controller,formKey) {
+Widget _authButton(BuildContext context, LoginController controller, formKey) {
   return Padding(
     padding: const EdgeInsets.all(20),
     child: SizedBox(
@@ -120,7 +137,7 @@ Widget _authButton(BuildContext context, LoginController controller,formKey) {
         style: ElevatedButton.styleFrom(
           shape: const BeveledRectangleBorder(),
         ),
-        onPressed: () => controller.submit(context,formKey),
+        onPressed: () => controller.submit(context, formKey),
         icon: Icon(
           controller.isLogin.value ? Icons.login : Icons.verified_user_rounded,
           color: ColorConstants.darkSecond,

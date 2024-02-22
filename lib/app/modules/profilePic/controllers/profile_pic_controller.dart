@@ -70,8 +70,11 @@ class ProfilePicController extends GetxController {
       loading.value = true;
       final name = nameController.text;
       final bio = bioController.text;
-      final number = numberController.text;
-      if(number != ""){
+      var number = numberController.text;
+      if (number!= "" && !number.startsWith("+91")) {
+        number = "+91$number";
+      }
+      if(number != "" && number.length == 13){
         if(pickedImageFile.value != null) {
           final storageRef = FirebaseStorage.instance
               .ref()
@@ -79,11 +82,11 @@ class ProfilePicController extends GetxController {
               .child("$id.jpg");
           await storageRef.putFile(pickedImageFile.value!);
           final url = await storageRef.getDownloadURL();
-          await userDb.doc(id).update({'url': url, 'name': name, 'bio': bio,'number': "+91$number"});
+          await userDb.doc(id).update({'url': url, 'name': name, 'bio': bio,'number': number});
           print("DATA WRITTEN");
         }
         else{
-          await userDb.doc(id).update({'name': name, 'bio': bio,'number': "+91$number"});
+          await userDb.doc(id).update({'name': name, 'bio': bio,'number': number});
           print("DATA WRITTEN");
         }
         loading.value = false;
@@ -93,7 +96,7 @@ class ProfilePicController extends GetxController {
       }
       else{
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter your number")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter a valid number")));
       }
 
     } catch (err) {

@@ -57,7 +57,7 @@ class ContactsController extends GetxController {
     } catch (e) {
       // Handle any errors (e.g., network issues, Firestore exceptions)
       print("Error checking user existence: $e");
-      return "";
+      return "Error checking user existence";
     }
   }
 
@@ -79,8 +79,7 @@ class ContactsController extends GetxController {
     super.onClose();
   }
 
-  void handleGotUser(String id) {
-    chatController.loadProfile(id);
-    Get.to(ChatView(id: id));
+  void handleGotUser(String id) async{
+    Get.to(()=>ChatView(id: id));
   }
 }

@@ -13,6 +13,7 @@ final _firebase = FirebaseAuth.instance;
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController numberController = TextEditingController();
 
   final ProfilePicController profileController = Get.put(ProfilePicController());
   final HomeController homeController = Get.put(HomeController());
@@ -38,6 +39,7 @@ class LoginController extends GetxController {
     // Cleanup tasks
     emailController.dispose();
     passwordController.dispose();
+    numberController.dispose();
     if (kDebugMode) {
       print("LoginController closed");
     }
@@ -53,10 +55,6 @@ class LoginController extends GetxController {
     }
 
     formKey.currentState!.save();
-    if (kDebugMode) {
-      print(emailController.text);
-      print(passwordController.text);
-    }
 
     try {
       loading.value = true;
@@ -102,11 +100,16 @@ class LoginController extends GetxController {
         const SnackBar(content: Text("Account created successfully")),
       );
 
+      var number = numberController.text;
+      if (!number.startsWith("+91")) {
+        number = "+91$number";
+      }
+
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user!.uid)
-          .set({'name': "", 'bio': "", "url": "",'number': ''});
+          .set({'name': "User", 'bio': "Chatify user here", "url": "",'number':number });
 
       print("Loading usersss !!!!");
        homeController.loadData();

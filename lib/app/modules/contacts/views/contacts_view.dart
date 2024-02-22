@@ -36,7 +36,15 @@ class ContactsView extends GetView<ContactsController> {
                           if(id.isEmpty){
                             ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${contact["name"]} does not use Chatify 😢")));
-                          }else{
+                          }
+                          else if(
+                          id == "Error checking user existence"
+                          ){
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error checking user existence")));
+
+                          }
+                          else{
                            controller.handleGotUser(id);
                           }
                           print(id);
