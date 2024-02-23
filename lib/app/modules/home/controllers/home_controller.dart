@@ -54,8 +54,6 @@ class HomeController extends GetxController {
     loading.value = false;
   }
 
-
-
   void loadUser(id) async {
     userDb.doc(id).get().then(
       (DocumentSnapshot doc) {
@@ -67,6 +65,13 @@ class HomeController extends GetxController {
     );
   }
 
+  Stream<QuerySnapshot> getUserChats(otherUserId) {
+    return userDb
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('chats')
+        .snapshots();
+  }
+
   Stream<QuerySnapshot> getLastMessage(userId, otherUserId) {
     List<String> ids = [userId, otherUserId];
     ids.sort();
@@ -76,8 +81,8 @@ class HomeController extends GetxController {
         .collection('chat')
         .doc(chatRoomId)
         .collection('messages')
+        .orderBy('timestamp', descending: true)
         .limit(1)
-        // .orderBy('timestamp', descending: false)
         .snapshots();
   }
 

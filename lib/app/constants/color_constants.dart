@@ -7,4 +7,6 @@ class ColorConstants {
   static const light = Color.fromARGB(255, 219, 219, 219);
   static const lightOpacity = Color.fromARGB(155, 219, 219, 219);
   static const primary = Color(0xff7a5af5);
+  static const online = Colors.green;
+  static const offline = Colors.red;
 }

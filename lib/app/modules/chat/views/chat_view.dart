@@ -102,6 +102,7 @@ class ChatView extends GetView<ChatController> {
         children: [
           Expanded(
             child: TextField(
+              focusNode: controller.chatViewFocusNode,
               controller: controller.messageController,
               textCapitalization: TextCapitalization.sentences,
               autocorrect: true,
@@ -139,6 +140,7 @@ class ChatView extends GetView<ChatController> {
         }
 
         return ListView(
+          controller: controller.scrollController,
             children: snapshot.data!.docs
                 .map((e) => _buildMessageItem(context, controller, e))
                 .toList());

@@ -112,13 +112,19 @@ class LoginController extends GetxController {
         'bio': "Chatify user here",
         "url": "",
         'number': number,
-        'chats': []
       });
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCred.user!.uid)
+          .collection('chats')
+          .add({'id': userCred.user!.uid});
 
       print("Loading usersss !!!!");
       homeController.loadData();
       profileController.loadData();
       homeController.loadEmail();
+      homeController.loadUser(userCred.user!.uid);
 
       Get.to(() => const HomeView());
     } on FirebaseAuthException catch (err) {

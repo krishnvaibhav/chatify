@@ -12,6 +12,8 @@ class ChatController extends GetxController {
   final TextEditingController messageController = TextEditingController();
   RxMap userProfileData = {}.obs;
 
+  FocusNode chatViewFocusNode = FocusNode();
+
   Future<void> loadProfile(id) async {
     loading.value = true;
     final docRef = userDb.doc(id);
@@ -59,30 +61,38 @@ class ChatController extends GetxController {
         .collection('chat')
         .doc(chatRoomId)
         .collection('messages')
-        .add(messageData);
+        .add(messageData)
+        .then((value) => scrollDown());
 
     messageController.clear();
 
-    bool first = true;
-    userDb.where("chats", arrayContains: id).get().then(
-      (querySnapshot) {
-        print("NOt first");
-        first = false;
+    await userDb
+        .doc(myId)
+        .collection('chats')
+        .where("id", isEqualTo: id)
+        .get()
+        .then(
+      (value) {
+        print(value.docs.length);
+        if (value.docs.isEmpty) {
+          print("First first");
+          addNewChatUser(myId, id);
+        } else {
+          print("Not First");
+        }
       },
       onError: (e) => print("Error completing: $e"),
     );
+  }
 
-    if (first) {
-      print("Adding first message");
-      try {
-        userDb.doc(myId).update({
-          'chats': FieldValue.arrayUnion([id])
-        });
-        final HomeController controller = HomeController();
-        controller.getIdList();
-      } catch (err) {
-        print(err);
-      }
+  void addNewChatUser(myId, id) async {
+    print("Adding first message");
+    try {
+      await userDb.doc(myId).collection('chats').add({'id': id});
+      await userDb.doc(id).collection('chats').add({'id': myId});
+      final HomeController controller = HomeController();
+    } catch (err) {
+      print(err);
     }
   }
 
@@ -99,10 +109,26 @@ class ChatController extends GetxController {
         .snapshots();
   }
 
+  final ScrollController scrollController = ScrollController();
+  void scrollDown() {
+    print("Scroll down");
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+  }
+
   @override
   void onInit() {
     super.onInit();
+    chatViewFocusNode.addListener(() {
+      if (chatViewFocusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          scrollDown();
+        });
+      }
+    });
   }
+
+
 
   @override
   void onReady() {
