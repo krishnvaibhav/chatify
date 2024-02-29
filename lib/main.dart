@@ -6,12 +6,18 @@ import 'package:chatify/app/modules/home/views/home_view.dart';
 import 'package:chatify/app/modules/localAuthentication/controllers/local_authentication_controller.dart';
 import 'package:chatify/app/modules/login/controllers/login_controller.dart';
 import 'package:chatify/app/modules/login/views/login_view.dart';
+import 'package:chatify/app/modules/main/controllers/main_controller.dart';
+import 'package:chatify/app/modules/main/views/main_view.dart';
+import 'package:chatify/app/modules/music/controllers/music_controller.dart';
+import 'package:chatify/app/modules/music_selector/views/music_selector_view.dart';
 import 'package:chatify/app/modules/profilePic/views/profile_pic_view.dart';
+import 'package:chatify/app/modules/room/controllers/room_controller.dart';
 import 'package:chatify/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'app/modules/music_selector/controllers/music_selector_controller.dart';
 import 'app/modules/profilePic/controllers/profile_pic_controller.dart';
 import 'app/routes/app_pages.dart';
 
@@ -36,6 +42,12 @@ Future<void> main() async {
   Get.put(HomeController());
   Get.put(ContactsController());
   Get.put(ChatController());
+  Get.put(MainController());
+  Get.put((MusicController()));
+  Get.put((MusicSelectorController()));
+  Get.put((RoomController()));
+
+
 
 
   runApp(
@@ -52,7 +64,7 @@ Future<void> main() async {
             return const CircularProgressIndicator();
           } else if (snapshot.hasData && snapshot.data != null) {
             print("User is logged in: ${snapshot.data}");
-            return const HomeView();
+            return const MainView();
           } else {
             print("User is not logged in");
             return LoginView();

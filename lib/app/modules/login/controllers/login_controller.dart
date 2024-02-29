@@ -1,5 +1,7 @@
 import 'package:chatify/app/modules/home/controllers/home_controller.dart';
 import 'package:chatify/app/modules/home/views/home_view.dart';
+import 'package:chatify/app/modules/main/controllers/main_controller.dart';
+import 'package:chatify/app/modules/main/views/main_view.dart';
 import 'package:chatify/app/modules/profilePic/controllers/profile_pic_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,6 +20,7 @@ class LoginController extends GetxController {
   final ProfilePicController profileController =
       Get.put(ProfilePicController());
   final HomeController homeController = Get.put(HomeController());
+  final MainController mainController = Get.put(MainController());
 
   RxBool isLogin = true.obs;
   RxBool loading = false.obs;
@@ -76,9 +79,9 @@ class LoginController extends GetxController {
           email: emailController.text, password: passwordController.text);
 
       print("Loading usersss !!!!");
-      homeController.loadData();
+      mainController.loadData();
       profileController.loadData();
-      homeController.loadEmail();
+      mainController.loadEmail();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Logged in ${user.user!.email}")),
@@ -121,12 +124,12 @@ class LoginController extends GetxController {
           .add({'id': userCred.user!.uid});
 
       print("Loading usersss !!!!");
-      homeController.loadData();
+      mainController.loadData();
       profileController.loadData();
-      homeController.loadEmail();
-      homeController.loadUser(userCred.user!.uid);
+      mainController.loadEmail();
+      mainController.loadUser(userCred.user!.uid);
 
-      Get.to(() => const HomeView());
+      Get.to(() => const MainView());
     } on FirebaseAuthException catch (err) {
       _handleError(context, err.message ?? "Unknown error occurred");
     }

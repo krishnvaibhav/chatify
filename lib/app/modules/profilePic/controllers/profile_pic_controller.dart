@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:chatify/app/modules/home/controllers/home_controller.dart';
 import 'package:chatify/app/modules/home/views/home_view.dart';
+import 'package:chatify/app/modules/main/controllers/main_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -13,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 class ProfilePicController extends GetxController {
 
   final HomeController homeController = Get.put(HomeController());
+  final MainController mainController = Get.put(MainController());
 
   Rx<File?> pickedImageFile = Rx<File?>(null);
   RxBool loading = false.obs;
@@ -91,7 +93,7 @@ class ProfilePicController extends GetxController {
         }
         loading.value = false;
         loadData();
-        homeController.loadData();
+        mainController.loadData();
         Get.to(() => const HomeView());
       }
       else{

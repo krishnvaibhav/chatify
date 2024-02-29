@@ -9,6 +9,10 @@ abstract class Routes {
   static const LOCAL_AUTHENTICATION = _Paths.LOCAL_AUTHENTICATION;
   static const CONTACTS = _Paths.CONTACTS;
   static const CHAT = _Paths.CHAT;
+  static const MAIN = _Paths.MAIN;
+  static const MUSIC = _Paths.MUSIC;
+  static const ROOM = _Paths.ROOM;
+  static const MUSIC_SELECTOR = _Paths.MUSIC_SELECTOR;
 }
 
 abstract class _Paths {
@@ -19,4 +23,8 @@ abstract class _Paths {
   static const LOCAL_AUTHENTICATION = '/local-authentication';
   static const CONTACTS = '/contacts';
   static const CHAT = '/chat';
+  static const MAIN = '/main';
+  static const MUSIC = '/music';
+  static const ROOM = '/room';
+  static const MUSIC_SELECTOR = '/music-selector';
 }

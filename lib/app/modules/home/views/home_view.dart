@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/home_controller.dart';
 import 'package:chatify/app/constants/text_constants.dart';
 
@@ -16,33 +17,18 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
     return Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: ColorConstants.darkSecond,
-          foregroundColor: ColorConstants.light,
-          title: Text(
-            TITLE,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: ColorConstants.light),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                scaffoldKey.currentState?.openDrawer();
+        body: Obx(() => GestureDetector(
+              onHorizontalDragEnd: (details) {
+                print(details);
+                print("Drag");
               },
-              icon: Icon(Icons.menu)),
-          centerTitle: true,
-        ),
-        drawer: _drawer(context, controller),
-        body: Obx(() => Container(
-              color: ColorConstants.darkSecond,
-              child: !controller.loading.value
-                  ? _userCardList(controller.idList, controller)
-                  : CircularProgressIndicator(),
+              child: Container(
+                color: ColorConstants.darkSecond,
+                child: !controller.loading.value
+                    ? _userCardList(controller.idList, controller)
+                    : CircularProgressIndicator(),
+              ),
             )));
   }
 }
@@ -55,7 +41,13 @@ Widget _userCardList(otherUserId, HomeController controller) {
         return Text("Error: ${snapshot.error}");
       }
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return Text("Please wait.....");
+        return Skeletonizer(
+            enabled: true,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              color: Colors.red,
+            ));
       }
 
       return snapshot.data!.docs.isNotEmpty
@@ -70,13 +62,14 @@ Widget _userCardList(otherUserId, HomeController controller) {
 }
 
 Widget _userCard(HomeController controller, data) {
+  var loading = true;
   String? idValue = data["id"];
   print(idValue);
   return FutureBuilder<DocumentSnapshot>(
     future: FirebaseFirestore.instance.collection('users').doc(idValue).get(),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator(); // or some loading indicator
+        loading = true; // or some loading indicator
       }
 
       if (snapshot.hasError) {
@@ -86,12 +79,15 @@ Widget _userCard(HomeController controller, data) {
       if (!snapshot.hasData || !snapshot.data!.exists) {
         return Container(); // User not found or data doesn't exist
       }
-
-      return _userCardDesign(
-        snapshot.data?["name"] ?? "",
-        snapshot.data?["url"] ?? "",
-        idValue!,
-        controller,
+      loading = false;
+      return Skeletonizer(
+        enabled: loading,
+        child: _userCardDesign(
+          snapshot.data?["name"] ?? "",
+          snapshot.data?["url"] ?? "",
+          idValue!,
+          controller,
+        ),
       );
     },
   );
@@ -130,11 +126,11 @@ Widget _userCardDesign(String name, String profileImage, String otherUserId,
                       return Text("Error: ${snapshot.error}");
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Please wait...");
+                      return const Text("Please wait...");
                     }
 
                     if (snapshot.data!.docs.isEmpty) {
-                      return Text(
+                      return const Text(
                         "No message yet...",
                         style: TextStyle(
                           fontSize: 12,
@@ -150,8 +146,8 @@ Widget _userCardDesign(String name, String profileImage, String otherUserId,
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Icon(
               Icons.circle,
               color: ColorConstants.online,
@@ -167,135 +163,6 @@ Widget _userCardDesign(String name, String profileImage, String otherUserId,
 Widget _lastMessage(e) {
   return Text(
     e["message"],
-    style: TextStyle(fontSize: 12, color: ColorConstants.lightOpacity),
-  );
-}
-
-Widget _drawer(context, controller) {
-  return Drawer(child: _sliderContent(context, controller));
-}
-
-Widget _sliderContent(context, HomeController controller) {
-  return Obx(
-    () => controller.userData.isNotEmpty
-        ? Container(
-            color: ColorConstants.dark,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 10,
-                ),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      foregroundImage: controller.userData["url"] != ""
-                          ? NetworkImage(controller.userData['url'])
-                          : null,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Text(controller.name?.value ?? ''),
-                    const Divider(),
-                    _styledListTile(context, "Profile", Icons.person,
-                        controller, const ProfilePicView(), () {}),
-                    _styledListTile(context, "Settings", Icons.settings,
-                        controller, const ProfilePicView(), () {}),
-                    _styledListTile(
-                        context,
-                        "Contacts",
-                        Icons.contact_phone_sharp,
-                        controller,
-                        const ContactsView(),
-                        () {}),
-                    _styledListTile(context, "Logout", Icons.logout, controller,
-                        LoginView(), () {
-                      controller.logout();
-                    }),
-                    !controller.alert.value
-                        ? _styledListTile(
-                            context,
-                            "Delete Account",
-                            Icons.delete,
-                            controller,
-                            (),
-                            () => controller.toggleAlert())
-                        : Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            ColorConstants.darkSecond),
-                                    onPressed: () {
-                                      controller.toggleAlert();
-                                      controller.deleteUser(context);
-                                    },
-                                    child: Text(
-                                      "Delete",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(color: Colors.red),
-                                    )),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            ColorConstants.darkSecond),
-                                    onPressed: () {
-                                      controller.toggleAlert();
-                                    },
-                                    child: Text(
-                                      "Cancel",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              color: ColorConstants.light),
-                                    )),
-                              )
-                            ],
-                          ),
-                  ],
-                ),
-              ),
-            ),
-          )
-        : Center(
-            child: Text("Data loading..."),
-          ),
-  );
-}
-
-Widget _styledListTile(
-    context, title, icon, HomeController controller, page, Function onClick) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: ListTile(
-      leading: Icon(
-        icon,
-        color: ColorConstants.light,
-      ),
-      onTap: () {
-        onClick();
-        title != "Delete Account" ? controller.closeDrawer(context) : () {};
-        title != "Delete Account" ? Get.to(page) : () {};
-      },
-      title: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .bodyMedium!
-            .copyWith(color: ColorConstants.light),
-      ),
-    ),
+    style: const TextStyle(fontSize: 12, color: ColorConstants.lightOpacity),
   );
 }

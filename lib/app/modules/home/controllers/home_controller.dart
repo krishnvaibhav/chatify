@@ -25,6 +25,7 @@ class HomeController extends GetxController {
     userDb.doc(id).get().then(
       (DocumentSnapshot doc) {
         final data = doc.data() as Map<String, dynamic>;
+        print("id ");
         print(data["chats"]);
         idList.value = data["chats"];
         loading.value = false;
@@ -34,35 +35,6 @@ class HomeController extends GetxController {
       onError: (e) => print("Error getting document: $e"),
     );
     loading.value = false;
-  }
-
-  void loadData() async {
-    final id = FirebaseAuth.instance.currentUser?.uid;
-    loading.value = true;
-    final docRef = userDb.doc(id);
-    docRef.get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        print("DATA RECIEVED $data");
-        userData = data.obs;
-        loading.value = false;
-      },
-      onError: (e) {
-        print("Error getting document: $e");
-      },
-    );
-    loading.value = false;
-  }
-
-  void loadUser(id) async {
-    userDb.doc(id).get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        print("DATA RECIEVED $data");
-        userData = data.obs;
-        loading.value = false;
-      },
-    );
   }
 
   Stream<QuerySnapshot> getUserChats(otherUserId) {
@@ -86,49 +58,13 @@ class HomeController extends GetxController {
         .snapshots();
   }
 
-  void logout() {
-    FirebaseAuth.instance.signOut();
-  }
+
 
   void toggleAlert() {
     alert.value = !alert.value;
   }
 
-  void deleteUser(context) async {
-    final id = FirebaseAuth.instance.currentUser!.uid;
-    try {
-      final storageRef =
-          FirebaseStorage.instance.ref().child('user_images/$id.jpg');
-      await storageRef.delete();
-      print("Storage cleared");
-    } catch (err) {
-      print(err);
-    }
-    try {
-      final firestoreRef =
-          FirebaseFirestore.instance.collection('users').doc(id);
-      await firestoreRef.delete();
-      print("Firestore cleared");
-      await FirebaseAuth.instance.currentUser!.delete();
-      print("Auth cleared");
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Account Deleted")));
-      Get.to(() => LoginView());
-    } catch (err) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Could not delete user")));
-    }
-  }
 
-  void loadEmail() {
-    name = FirebaseAuth.instance.currentUser?.email!.obs;
-  }
-
-  void closeDrawer(context) {
-    navigator?.pop(context);
-  }
 
   @override
   void onInit() {
@@ -138,12 +74,10 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-
+    print("Ready!!!!!");
     if (FirebaseAuth.instance.currentUser != null) {
       print("loading user");
-      loadData();
       getIdList();
-      loadEmail();
       if (userData["number"] == "") {
         Get.to(() => const ProfilePicView());
       }
